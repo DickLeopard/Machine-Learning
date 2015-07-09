@@ -1,0 +1,275 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import scipy as sp\n",
+    "import matplotlib.pyplot as plt\n",
+    "import pandas as pd\n",
+    "import seaborn as sns"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<img src = 'homework 1.png'>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def target_f(x1, x2, point_a, point_b):\n",
+    "    a = point_a[0]\n",
+    "    b = point_a[1]\n",
+    "    c = point_b[0]\n",
+    "    d = point_b[1]\n",
+    "    # The line determined by point_a and point_b\n",
+    "    line = x2 - (b-d)/(a-c)*x1+(b*c-a*d)/(a-c)\n",
+    "    return line"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def training_set(x_1, x_2):\n",
+    "    ts = []\n",
+    "    for i in xrange(N):\n",
+    "        ts.append((x_1[i], x_2[i]))\n",
+    "    return ts"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 83,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "def PLA(ts):\n",
+    "    point_a = (np.random.uniform(-1,1),np.random.uniform(-1,1))\n",
+    "    point_b = (np.random.uniform(-1,1),np.random.uniform(-1,1))\n",
+    "    x_1 = np.random.uniform(-1,1,N)\n",
+    "    x_2 = np.random.uniform(-1,1,N)\n",
+    "    ts = training_set(x_1, x_2)\n",
+    "    w = [0,0,0]\n",
+    "    iter_count = 0\n",
+    "    while True:\n",
+    "        error_count = 0\n",
+    "        while True:\n",
+    "            point = ts[np.random.randint(N)]\n",
+    "            if np.sign(target_f(point[0], point[1], point_a, point_b)) != np.sign(w[0]+w[1]*point[0]+w[2]*point[1]):\n",
+    "                break\n",
+    "        f = target_f(point[0], point[1], point_a, point_b)\n",
+    "        y = np.sign(f)\n",
+    "        w[0] += y\n",
+    "        w[1] += point[0] * y\n",
+    "        w[2] += point[1] * y\n",
+    "        iter_count += 1\n",
+    "        for (x,y) in ts:\n",
+    "            if np.sign(target_f(x,y,point_a, point_b)) != np.sign(w[0]+w[1]*x+w[2]*y):\n",
+    "                error_count += 1\n",
+    "        if error_count == 0:\n",
+    "            return iter_count, w, point_a, point_b\n",
+    "            break"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 121,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "9.2639999999999993"
+      ]
+     },
+     "execution_count": 121,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# N = 10, run 1000 times to calculate the average of iteration time\n",
+    "N=10\n",
+    "itertime = []\n",
+    "probability = []\n",
+    "for i in xrange(1000):\n",
+    "    a, w, point_a, point_b = PLA(10)\n",
+    "    itertime.append(a)\n",
+    "    count = 0\n",
+    "    for i in xrange(10000):\n",
+    "        point = (np.random.uniform(-1,1),np.random.uniform(-1,1))\n",
+    "        if np.sign(target_f(point[0], point[1],point_a, point_b)) != np.sign(w[0]+w[1]*point[0]+w[2]*point[1]):\n",
+    "            count += 1\n",
+    "    p = count/10000.0\n",
+    "    probability.append(p)\n",
+    "avg = np.average(itertime)\n",
+    "avg"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For the choices in question 7, 15 is the closest. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 122,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.1077157"
+      ]
+     },
+     "execution_count": 122,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "np.average(probability)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For the choices in question 8, the closest one is 0.1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "· And when N = 100"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<img src = \"homework 1_2.png\">"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 123,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "102.746"
+      ]
+     },
+     "execution_count": 123,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "N=100\n",
+    "itertime = []\n",
+    "probability = []\n",
+    "for i in xrange(1000):\n",
+    "    a, w, point_a, point_b = PLA(100)\n",
+    "    itertime.append(a)\n",
+    "    count = 0\n",
+    "    for i in xrange(10000):\n",
+    "        point = (np.random.uniform(-1,1),np.random.uniform(-1,1))\n",
+    "        if np.sign(target_f(point[0], point[1],point_a, point_b)) != np.sign(w[0]+w[1]*point[0]+w[2]*point[1]):\n",
+    "            count += 1\n",
+    "    p = count/10000.0\n",
+    "    probability.append(p)\n",
+    "avg = np.average(itertime)\n",
+    "avg"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For the choices in question 9, 100 is the closest. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 124,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.01324"
+      ]
+     },
+     "execution_count": 124,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "np.average(probability)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Question 10, 0.01 is closest. "
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 2",
+   "language": "python",
+   "name": "python2"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}
